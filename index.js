@@ -3,9 +3,10 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export default function createApiClient() {
+export default function createApiClient(baseURL) {
 	const API= axios.create({
-		baseURL: `${process.env.API_BASE_URL}${process.env.API_END_POINT_URL}`,
+		// baseURL: `${process.env.API_BASE_URL}${process.env.API_END_POINT_URL}`,
+		baseURL,
 		headers: { 'Accept': 'application/json' }
 	});
 

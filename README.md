@@ -56,7 +56,7 @@ console.log(cart);
  
  **Parameters:**
 - `cart_key (string, optional)` — The existing cart key. If omitted, a new cart will be created and its key returned.
-- `id (number|string, required)` — The product ID to add.
+- `id (string, required)` — The product ID to add.
 - `quantity (string, optional, default: "1")`  — Quantity to add.
 
 **Example:**

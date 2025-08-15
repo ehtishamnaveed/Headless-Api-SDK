@@ -25,7 +25,7 @@ like:
 const api = createApiClient(`${import.meta.env.VITE_API_BASE_URL}`);
 ```
 
-Now can the functions as you like, but remmber to use ``await`` as they are ``async`` functions.
+Now use the functions as you like, but remmber to use ``await`` as they are ``async`` functions.
 
 ## Functions
 

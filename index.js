@@ -1,11 +1,14 @@
 import axios from "axios";
 
-export default function createApiClient(baseURL) {
+export default function createApiClient(siteURL) {
+	const baseURL = `${siteURL}/wp-json/wp/v2`;
 	const API= axios.create({
-		// baseURL: `${process.env.API_BASE_URL}${process.env.API_END_POINT_URL}`,
 		baseURL,
 		headers: { 'Accept': 'application/json' }
 	});
+
+// --------------------------------------------------------------------------------//
+// Helper functions
 
 	// Format cart data for ``sidebar``
 	const formatCartData = (response) => {
@@ -20,7 +23,64 @@ export default function createApiClient(baseURL) {
 	  };
 	};
 
+	// Format product data
+	const formatProductsData = async (response) => {
+		return response.data.products.map(product => ({
+	      id: product.id,
+	      name: product.name,
+	      slug: product.slug,
+	      summary: product.short_description,
+	      description: product.long_description,
+	      regular_price: product.prices.regular_price,
+	      sale_price: product.prices.sale_price,
+	      sale_duration: {
+	        start: product.prices.date_on_sale.from,
+	        end: product.prices.date_on_sale.to
+	      },
+	      featured_image: {
+	        name: product.images[0].name,
+	        path: product.images[0].src.full,
+	      },
+	      gallery: product.images.slice(1).map(img => ({
+	        name: img.name,
+	        path: img.src.full
+	      })),
+	      categories: product.categories.map(category => ({
+	        id: category.id,
+	        name: category.name,
+	        slug: category.slug,
+	      })),
+	      variations: product.variations,
+	      stock: {
+	        status: product.stock.stock_status,
+	        quantity: product.stock.stock_quantity,
+	      },
+	      weight: product.weight,
+	      dimension: product.dimensions,
+	      related_products: product.related.map(related_product => ({
+	        id: related_product.id,
+	      })),
+	    })
+	  );
+	}
+
+// --------------------------------------------------------------------------------//
+// Headless functions
+
 	return {
+		//Get products
+		async getProducts() {
+			console.log('Fetching the products.');
+	        try {
+	        	const response = await API.get(`/products`);
+	        	console.log('Products fetched successfully');
+	        	return formatProductsData(response.data);
+	        } catch (error) {
+			    console.error("❌ Error fetching products:", error.response?.data || error.message);
+			    throw new Error('Failed to fetch products.');
+			  }
+		},
+
 		// Get cart
 		async getCart(cart_key) {
 			if (!cart_key) {

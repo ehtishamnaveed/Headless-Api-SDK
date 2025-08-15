@@ -1,5 +1,5 @@
 # Headless Woo API Library for Frontend
-A special front end library for headless woocomerce via the use of ``Cocart API`` to negate the use of ``Node JS Server``.
+A special front end library for headless woocomerce via the use of ``Cocart API``.
 
 `!! CURRENTLY FOR GUEST CUSTOMER USE ONLY`
 

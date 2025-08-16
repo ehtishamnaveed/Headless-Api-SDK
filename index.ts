@@ -128,13 +128,13 @@ export default function createApiClient(siteURL) {
 			        },
 			      });
 			    console.log("Item added");
-		},
-
 			    return response.data.cart_key;
+
 			} catch (error) {
 			    console.error("❌ Error adding item:", error.response?.data || error.message);
 			    throw new Error('Failed to add item in cart.');
 			   }
+		},
 
 		// Update item
 		async updateItem(cart_key, item_key, quantity) {

@@ -83,10 +83,10 @@ export default function createApiClient(siteURL) {
 		// Get cart
 		async getCart(cart_key: string) {
 	        try {
-	        	if (typeof cart_key !== "string") {
-	        		throw new Error("cart_key is requiored as string parameter");
-	        	}
-	        	if (cart_key === "") throw new Error("Cart key is required");
+	        	// Ensure cart_key is provided as `string` and is not empty
+	        	if (typeof cart_key !== "string") throw new Error("cart_key is required as `string`.");
+	        	if (cart_key === "") throw new Error("cart_key is required, can't be empty.");
+
 		        console.log('Fetching the cart.');
 
 	        	const response = await API.get(`/cart`,
@@ -99,20 +99,32 @@ export default function createApiClient(siteURL) {
 	        	return formatCartData(response.data);
 	        } catch (error) {
 			    console.error("❌ Error fetching cart:", error.response?.data || error.message);
+			    throw new Error("❌ Error fetching cart:", error.response?.data || error.message);
 			  }
 		},
 
 		// Add to cart
 		async addToCart(cart_key: string = "", id: string, quantity: string = "1") {
-			if (cart_key === "") {
-	            console.log('🛒 Creating new cart with item...');
-	        }
-	        else{
-	            console.log(`Current 🛒 cart_key: ${cart_key}`);
-	            console.log('🛒Adding item to existing cart...');
-	        }
 		    try {
-		    	if (id === "") throw new Error("Product id not found.");
+		    	// Ensure cart_key is provided as `string`
+		    	if (typeof cart_key !== "string") throw new Error("cart_key is required as `string`.");
+
+	        	// Ensure id is provided as `string` and is not empty
+	        	if (typeof id !== "string") throw new Error(" id is required as `string`.");
+		    	if (id === "") throw new Error("id is required, can't be empty.");
+
+		    	// Ensure quantity is provided as `string`
+		    	if (typeof quantity !== "string") throw new Error("quantity is required as a `string`")
+
+
+		    	// Notifier to show information about `New` and `Exisitng cart`
+		    	if (cart_key === "") {
+		            console.log('🛒 Creating new cart with item...');
+		        }
+		        else{
+		            console.log(`Current 🛒 cart_key: ${cart_key}`);
+		            console.log('🛒Adding item to existing cart...');
+		        }
 
 			    const response = await API.post(`/cart/add-item`,
 			      { // Pass as json data body
@@ -135,8 +147,16 @@ export default function createApiClient(siteURL) {
 		// Update item
 		async updateItem(cart_key: string, item_key: string, quantity: string) {
 			try {
+				// Ensure cart_key is provided as `string` and is not empty
+				if (typeof cart_key !== "string") throw new Error("cart_key is required as `string`.");
 				if (cart_key === "") throw new Error("Cart key is required");
+
+				// Ensure item_key is provided as `string` and is not empty
+				if (typeof item_key !== "string") throw new Error("item_key is required as `string`.");
 				if (item_key === "") throw new Error("Item key is required");
+
+				// Ensure quantity is provided as `string` and is not empty
+				if (typeof quantity !== "string") throw new Error("quantity is required as `string`.");
 				if (quantity === "") throw new Error("Quantity is required");
 
 				const response = await API.post(`/cart/item/${item_key}`,
@@ -158,7 +178,12 @@ export default function createApiClient(siteURL) {
 		// Remove item
 		async removeItem(cart_key: string, item_key: string) {
 			try {
+				// Ensure cart_key is provided as `string` and is not empty
+				if (typeof cart_key !== "string") throw new Error("cart_key is required as `string`.");
 				if (cart_key === "") throw new Error("Cart key is required");
+
+				// Ensure item_key is provided as `string` and is not empty
+				if (typeof item_key !== "string") throw new Error("item_key is required as `string`.");
 				if (item_key === "") throw new Error("Item key is required");
 
 				const response = await API.delete(`/cart/item/${item_key}`,

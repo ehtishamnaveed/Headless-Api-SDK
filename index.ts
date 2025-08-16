@@ -98,12 +98,8 @@ export default function createApiClient(siteURL) {
 	        	console.log('Cart fetched successfully');
 	        	return formatCartData(response.data);
 	        } catch (error) {
-			    console.error("❌ Error fetching cart:", error.response?.data || error.message);
-			    const message =
-			      error.response?.data?.message || error.message || "Failed to fetch cart.";
-
-			    // Don't log inside SDK — let the user app handle logs/UI
-			    throw new Error(message);
+			    const message = error.response?.data?.message || error.message || "Failed to fetch cart.";
+			    return { success: false, error: message, };
 			  }
 		},
 

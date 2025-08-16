@@ -141,8 +141,9 @@ export default function createApiClient(siteURL) {
 			    return response.data.cart_key;
 
 			} catch (error) {
-			    console.error("❌ Error adding item:", error.response?.data || error.message);
-			   }
+			    const message = error.response?.data?.message || error.message || "Failed to fetch cart.";
+			    return { success: false, error: message, };
+			  }
 		},
 
 		// Update item

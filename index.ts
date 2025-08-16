@@ -83,9 +83,10 @@ export default function createApiClient(siteURL) {
 		// Get cart
 		async getCart(cart_key: string) {
 	        try {
-	        	if (cart_key === "") {
-		            throw new Error("Cart key is required");
-		        }
+	        	if (typeof cart_key !== "string") {
+	        		throw new Error("cart_key is requiored as string parameter");
+	        	}
+	        	if (cart_key === "") throw new Error("Cart key is required");
 		        console.log('Fetching the cart.');
 
 	        	const response = await API.get(`/cart`,
@@ -122,26 +123,21 @@ export default function createApiClient(siteURL) {
 			        params: {
 			          cart_key: cart_key
 			        },
-			        headers: {
-			          'Content-Type': 'application/json',
-			          'Accept': 'application/json',
-			        },
 			      });
 			    console.log("Item added");
 			    return response.data.cart_key;
 
 			} catch (error) {
 			    console.error("❌ Error adding item:", error.response?.data || error.message);
-			    throw new Error('Failed to add item in cart.');
 			   }
 		},
 
 		// Update item
-		async updateItem(cart_key, item_key, quantity) {
+		async updateItem(cart_key: string, item_key: string, quantity: string) {
 			try {
-				if (!cart_key) throw new Error("Cart key is required");
-				if (!item_key) throw new Error("Item key is required");
-				if (!quantity) throw new Error("Quantity is required");
+				if (cart_key === "") throw new Error("Cart key is required");
+				if (item_key === "") throw new Error("Item key is required");
+				if (quantity === "") throw new Error("Quantity is required");
 
 				const response = await API.post(`/cart/item/${item_key}`,
 				{
@@ -151,21 +147,19 @@ export default function createApiClient(siteURL) {
 			    	params: {
 			    		cart_key: cart_key,
 			    	},
-			    	headers: { 'Content-Type': 'application/json' }
 			    });
 			    console.log("Item data updated.")
 			    return response.data;
 			} catch (error) {
 			    console.error("❌ Error updating item:", error.response?.data || error.message);
-			    throw new Error('Failed to update item in cart.');
 			   }
 		},
 
 		// Remove item
-		async removeItem(cart_key, item_key) {
+		async removeItem(cart_key: string, item_key: string) {
 			try {
-				if (!cart_key) throw new Error("Cart key is required");
-				if (!item_key) throw new Error("Item key is required");
+				if (cart_key === "") throw new Error("Cart key is required");
+				if (item_key === "") throw new Error("Item key is required");
 
 				const response = await API.delete(`/cart/item/${item_key}`,
 			    {
@@ -177,7 +171,6 @@ export default function createApiClient(siteURL) {
 			    return response.data;
 			} catch (error) {
 			    console.error("❌ Error removing item:", error.response?.data || error.message);
-			    throw new Error('Failed to remove item in cart.');
 			   }
 		}
 	};

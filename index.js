@@ -77,18 +77,17 @@ export default function createApiClient(siteURL) {
 	        	return formatProductsData(response.data);
 	        } catch (error) {
 			    console.error("❌ Error fetching products:", error.response?.data || error.message);
-			    throw new Error('Failed to fetch products.');
 			  }
 		},
 
 		// Get cart
-		async getCart(cart_key) {
-			if (!cart_key) {
-	            throw new Error("Cart key is required");
-	            return 0;
-	        }
-	        console.log('Fetching the cart.');
+		async getCart(cart_key: string) {
 	        try {
+	        	if (cart_key === "") {
+		            throw new Error("Cart key is required");
+		        }
+		        console.log('Fetching the cart.');
+
 	        	const response = await API.get(`/cart`,
 	        	{
 	        		params: {
@@ -99,13 +98,12 @@ export default function createApiClient(siteURL) {
 	        	return formatCartData(response.data);
 	        } catch (error) {
 			    console.error("❌ Error fetching cart:", error.response?.data || error.message);
-			    throw new Error('Failed to fetch cart.');
 			  }
 		},
 
 		// Add to cart
-		async addToCart(cart_key = null, id, quantity = "1") {
-			if (!cart_key) {
+		async addToCart(cart_key = "": string, id: string, quantity = "1": string) {
+			if (cart_key === "") {
 	            console.log('🛒 Creating new cart with item...');
 	        }
 	        else{
@@ -113,6 +111,8 @@ export default function createApiClient(siteURL) {
 	            console.log('🛒Adding item to existing cart...');
 	        }
 		    try {
+		    	if (id === "") throw new Error("Product id not found.");
+
 			    const response = await API.post(`/cart/add-item`,
 			      { // Pass as json data body
 			        id: id,
@@ -128,26 +128,21 @@ export default function createApiClient(siteURL) {
 			        },
 			      });
 			    console.log("Item added");
-			    return response.data;
+		},
+
+			    return response.data.cart_key;
 			} catch (error) {
 			    console.error("❌ Error adding item:", error.response?.data || error.message);
 			    throw new Error('Failed to add item in cart.');
 			   }
-		},
 
 		// Update item
 		async updateItem(cart_key, item_key, quantity) {
-			if (!cart_key) {
-				throw new Error("Cart key is required");
-			}
-			if (!item_key) {
-				throw new Error("Item key is required");
-			}
-			if (!quantity) {
-				throw new Error("Quantity is required");
-			}
-
 			try {
+				if (!cart_key) throw new Error("Cart key is required");
+				if (!item_key) throw new Error("Item key is required");
+				if (!quantity) throw new Error("Quantity is required");
+
 				const response = await API.post(`/cart/item/${item_key}`,
 				{
 			       quantity: quantity,
@@ -168,14 +163,10 @@ export default function createApiClient(siteURL) {
 
 		// Remove item
 		async removeItem(cart_key, item_key) {
-			if (!cart_key) {
-				throw new Error("Cart key is required");
-			}
-			if (!item_key) {
-				throw new Error("Item key is required");
-			}
-
 			try {
+				if (!cart_key) throw new Error("Cart key is required");
+				if (!item_key) throw new Error("Item key is required");
+
 				const response = await API.delete(`/cart/item/${item_key}`,
 			    {
 			    	params: {

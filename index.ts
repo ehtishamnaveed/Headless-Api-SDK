@@ -102,7 +102,7 @@ export default function createApiClient(siteURL) {
 		},
 
 		// Add to cart
-		async addToCart(cart_key = "": string, id: string, quantity = "1": string) {
+		async addToCart(cart_key: string = "", id: string, quantity: string = "1") {
 			if (cart_key === "") {
 	            console.log('🛒 Creating new cart with item...');
 	        }

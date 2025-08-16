@@ -76,7 +76,8 @@ export default function createApiClient(siteURL) {
 	        	console.log('Products fetched successfully');
 	        	return formatProductsData(response.data);
 	        } catch (error) {
-			    console.error("❌ Error fetching products:", error.response?.data || error.message);
+			    const message = error.response?.data?.message || error.message || "Failed to fetch cart.";
+			    return { success: false, error: message, };
 			  }
 		},
 
@@ -171,8 +172,9 @@ export default function createApiClient(siteURL) {
 			    console.log("Item data updated.")
 			    return response.data;
 			} catch (error) {
-			    console.error("❌ Error updating item:", error.response?.data || error.message);
-			   }
+			    const message = error.response?.data?.message || error.message || "Failed to fetch cart.";
+			    return { success: false, error: message, };
+			  }
 		},
 
 		// Remove item
@@ -195,8 +197,9 @@ export default function createApiClient(siteURL) {
 			    console.log("Item removed.")
 			    return response.data;
 			} catch (error) {
-			    console.error("❌ Error removing item:", error.response?.data || error.message);
-			   }
+			    const message = error.response?.data?.message || error.message || "Failed to fetch cart.";
+			    return { success: false, error: message, };
+			  }
 		}
 	};
 }

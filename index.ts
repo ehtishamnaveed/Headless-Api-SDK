@@ -24,15 +24,16 @@ export default function createApiClient(siteURL) {
 	};
 
 	// Format product data
-	const formatProductsData = async (response) => {
-		return response.data.products.map(product => ({
+	const formatProductsData = (response) => {
+	  return response.data.products.map(product => ({
 	      id: product.id,
 	      name: product.name,
 	      slug: product.slug,
 	      summary: product.short_description,
 	      description: product.long_description,
-	      regular_price: product.prices.regular_price,
-	      sale_price: product.prices.sale_price,
+	      // minor_unit: product.prices.currency.currency_minor_unit,
+	      regular_price: product.prices.regular_price / Math.pow(10,2),
+	      sale_price: product.prices.sale_price / Math.pow(10,2),
 	      sale_duration: {
 	        start: product.prices.date_on_sale.from,
 	        end: product.prices.date_on_sale.to
@@ -50,7 +51,19 @@ export default function createApiClient(siteURL) {
 	        name: category.name,
 	        slug: category.slug,
 	      })),
-	      variations: product.variations,
+
+	      variations: product.variations.map(variation => ({
+	        id: variation.id,
+	        name: variation.attributes.attribute_format,
+	        description: variation.description,
+	        image: variation.featured_image.full,
+	        regular_price: variation.prices.regular_price/Math.pow(10,2),
+	        sale_price: variation.prices.sale_price/Math.pow(10,2),
+	        sale_duration: {
+	          start: variation.prices.date_on_sale.from,
+	          end: variation.prices.date_on_sale.to
+	        },
+	      })),
 	      stock: {
 	        status: product.stock.stock_status,
 	        quantity: product.stock.stock_quantity,

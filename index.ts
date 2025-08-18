@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export default function createApiClient(siteURL) {
+export default function createApiClient(siteURL: string) {
 	const baseURL = `${siteURL}/wp-json/cocart/v2`;
 	const API= axios.create({
 		baseURL,
@@ -11,7 +11,7 @@ export default function createApiClient(siteURL) {
 // Helper functions
 
 	// Format cart data for ``sidebar``
-	const formatCartData = (response) => {
+	const formatCartData = (response: any) => {
 	  const minor_unit = response.currency.currency_minor_unit;
 	  const total_amount = response.totals.total/ Math.pow(10, minor_unit);
 
@@ -24,9 +24,9 @@ export default function createApiClient(siteURL) {
 	};
 
 	// Format product data
-	const formatProductsData = (response) => {
-	  return response.data.products.map(product => ({
-	      id: product.id,
+	const formatProductsData = (response: any) => {
+	  return response.data.products.map((product: any) => ({
+	      id: String(product.id),
 	      name: product.name,
 	      slug: product.slug,
 	      summary: product.short_description,
@@ -42,18 +42,18 @@ export default function createApiClient(siteURL) {
 	        name: product.images[0].name,
 	        path: product.images[0].src.full,
 	      },
-	      gallery: product.images.slice(1).map(img => ({
+	      gallery: product.images.slice(1).map((img: any) => ({
 	        name: img.name,
-	        path: img.src.full
+	        path: img.src.full,
 	      })),
-	      categories: product.categories.map(category => ({
-	        id: category.id,
+	      categories: product.categories.map((category: any) => ({
+	        id: String(category.id),
 	        name: category.name,
 	        slug: category.slug,
 	      })),
 
-	      variations: product.variations.map(variation => ({
-	        id: variation.id,
+	      variations: product.variations.map((variation: any) => ({
+	        id: String(variation.id),
 	        name: variation.attributes.attribute_format,
 	        description: variation.description,
 	        image: variation.featured_image.full,
@@ -61,7 +61,7 @@ export default function createApiClient(siteURL) {
 	        sale_price: variation.prices.sale_price/Math.pow(10,2),
 	        sale_duration: {
 	          start: variation.prices.date_on_sale.from,
-	          end: variation.prices.date_on_sale.to
+	          end: variation.prices.date_on_sale.to,
 	        },
 	      })),
 	      stock: {
@@ -70,11 +70,10 @@ export default function createApiClient(siteURL) {
 	      },
 	      weight: product.weight,
 	      dimension: product.dimensions,
-	      related_products: product.related.map(related_product => ({
-	        id: related_product.id,
+	      related_products: product.related.map((related_product: any) => ({
+	        id: String(related_product.id),
 	      })),
-	    })
-	  );
+	    }));
 	}
 
 // --------------------------------------------------------------------------------//
@@ -88,7 +87,7 @@ export default function createApiClient(siteURL) {
 	        	const response = await API.get(`/products`);
 	        	console.log('Products fetched successfully');
 	        	return formatProductsData(response);
-	        } catch (error) {
+	        } catch (error: any) {
 			    const message = error.response?.data?.message || error.message || "Failed to fetch cart.";
 			    return { success: false, error: message, };
 			  }
@@ -111,7 +110,7 @@ export default function createApiClient(siteURL) {
 	        	});
 	        	console.log('Cart fetched successfully');
 	        	return formatCartData(response.data);
-	        } catch (error) {
+	        } catch (error: any) {
 			    const message = error.response?.data?.message || error.message || "Failed to fetch cart.";
 			    return { success: false, error: message, };
 			  }
@@ -153,7 +152,7 @@ export default function createApiClient(siteURL) {
 			    console.log("Item added");
 			    return response.data.cart_key;
 
-			} catch (error) {
+			} catch (error: any) {
 			    const message = error.response?.data?.message || error.message || "Failed to fetch cart.";
 			    return { success: false, error: message, };
 			  }
@@ -185,7 +184,7 @@ export default function createApiClient(siteURL) {
 			    });
 			    console.log("Item data updated.")
 			    return response.data;
-			} catch (error) {
+			} catch (error: any) {
 			    const message = error.response?.data?.message || error.message || "Failed to fetch cart.";
 			    return { success: false, error: message, };
 			  }
@@ -210,7 +209,7 @@ export default function createApiClient(siteURL) {
 			    });
 			    console.log("Item removed.")
 			    return response.data;
-			} catch (error) {
+			} catch (error: any) {
 			    const message = error.response?.data?.message || error.message || "Failed to fetch cart.";
 			    return { success: false, error: message, };
 			  }

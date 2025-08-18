@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export default function createApiClient(siteURL) {
-	const baseURL = `${siteURL}/wp-json/wp/v2`;
+	const baseURL = `${siteURL}/wp-json/cocart/v2`;
 	const API= axios.create({
 		baseURL,
 		headers: { 'Accept': 'application/json' }

@@ -87,7 +87,7 @@ export default function createApiClient(siteURL) {
 	        try {
 	        	const response = await API.get(`/products`);
 	        	console.log('Products fetched successfully');
-	        	return formatProductsData(response.data);
+	        	return formatProductsData(response);
 	        } catch (error) {
 			    const message = error.response?.data?.message || error.message || "Failed to fetch cart.";
 			    return { success: false, error: message, };

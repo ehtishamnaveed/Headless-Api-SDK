@@ -10,6 +10,16 @@ export default function createApiClient(siteURL: string) {
 // --------------------------------------------------------------------------------//
 // Helper functions
 
+	// Get cart_key from the local Storage
+	const getCartKey = (): string => {
+		return localStorage.getItem("cart_key") || "";
+	}
+
+	// Set cart_key in the local Storage
+	const setCartKey = (cartName: string, cartValue: string) => {
+		localStorage.setItem(cartName,cartValue);
+	}
+
 	// Format cart data for ``sidebar``
 	const formatCartData = (response: any) => {
 	  const minor_unit = response.currency.currency_minor_unit;
@@ -32,20 +42,23 @@ export default function createApiClient(siteURL: string) {
 	      summary: product.short_description,
 	      description: product.long_description,
 	      // minor_unit: product.prices.currency.currency_minor_unit,
-	      regular_price: product.prices.regular_price / Math.pow(10,2),
-	      sale_price: product.prices.sale_price / Math.pow(10,2),
+	      regular_price: product.prices.regular_price/Math.pow(10,2),
+	      sale_price: product.prices.sale_price/Math.pow(10,2),
 	      sale_duration: {
 	        start: product.prices.date_on_sale.from,
 	        end: product.prices.date_on_sale.to
 	      },
+
 	      featured_image: {
 	        name: product.images[0].name,
 	        path: product.images[0].src.full,
 	      },
+
 	      gallery: product.images.slice(1).map((img: any) => ({
 	        name: img.name,
 	        path: img.src.full,
 	      })),
+
 	      categories: product.categories.map((category: any) => ({
 	        id: String(category.id),
 	        name: category.name,
@@ -64,15 +77,18 @@ export default function createApiClient(siteURL: string) {
 	          end: variation.prices.date_on_sale.to,
 	        },
 	      })),
+
 	      stock: {
 	        status: product.stock.stock_status,
 	        quantity: product.stock.stock_quantity,
 	      },
+
 	      weight: product.weight,
 	      dimension: product.dimensions,
 	      related_products: product.related.map((related_product: any) => ({
 	        id: String(related_product.id),
 	      })),
+
 	    }));
 	}
 
@@ -94,11 +110,12 @@ export default function createApiClient(siteURL: string) {
 		},
 
 		// Get cart
-		async getCart(cart_key: string) {
+		async getCart() {
 	        try {
+	        	const cart_key = getCartKey();
 	        	// Ensure cart_key is provided as `string` and is not empty
 	        	if (typeof cart_key !== "string") throw new Error("cart_key is required as `string`.");
-	        	if (cart_key === "") throw new Error("cart_key is required, can't be empty.");
+	        	if (cart_key === "") throw new Error("No Cart is present.");
 
 		        console.log('Fetching the cart.');
 
@@ -117,8 +134,9 @@ export default function createApiClient(siteURL: string) {
 		},
 
 		// Add to cart
-		async addToCart(cart_key: string = "", id: string, quantity: string = "1") {
+		async addToCart(id: string, quantity: string = "1") {
 		    try {
+		    	const cart_key = getCartKey();
 		    	// Ensure cart_key is provided as `string`
 		    	if (typeof cart_key !== "string") throw new Error("cart_key is required as `string`.");
 
@@ -149,8 +167,12 @@ export default function createApiClient(siteURL: string) {
 			          cart_key: cart_key
 			        },
 			      });
+			    // res.cookie('cart_key', response.data.cart_key, { httpOnly: true });
 			    console.log("Item added");
-			    return response.data.cart_key;
+			    console.log("Key Stored");
+			    // localStorage.setItem(cart_key,response.data.cart_key);
+			    setCartKey("cart_key", response.data.cart_key);
+			    // return response.data.cart_key;
 
 			} catch (error: any) {
 			    const message = error.response?.data?.message || error.message || "Failed to fetch cart.";
@@ -159,11 +181,12 @@ export default function createApiClient(siteURL: string) {
 		},
 
 		// Update item
-		async updateItem(cart_key: string, item_key: string, quantity: string) {
+		async updateItem(item_key: string, quantity: string) {
 			try {
+				const cart_key = getCartKey();
 				// Ensure cart_key is provided as `string` and is not empty
 				if (typeof cart_key !== "string") throw new Error("cart_key is required as `string`.");
-				if (cart_key === "") throw new Error("Cart key is required");
+				if (cart_key === "") throw new Error("No cart is present.");
 
 				// Ensure item_key is provided as `string` and is not empty
 				if (typeof item_key !== "string") throw new Error("item_key is required as `string`.");
@@ -191,11 +214,12 @@ export default function createApiClient(siteURL: string) {
 		},
 
 		// Remove item
-		async removeItem(cart_key: string, item_key: string) {
+		async removeItem(item_key: string) {
 			try {
+				const cart_key = getCartKey();
 				// Ensure cart_key is provided as `string` and is not empty
 				if (typeof cart_key !== "string") throw new Error("cart_key is required as `string`.");
-				if (cart_key === "") throw new Error("Cart key is required");
+				if (cart_key === "") throw new Error("No cart is present.");
 
 				// Ensure item_key is provided as `string` and is not empty
 				if (typeof item_key !== "string") throw new Error("item_key is required as `string`.");

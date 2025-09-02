@@ -1,6 +1,6 @@
 export default function createApiClient(siteURL: string): {
     getProducts(): Promise<any>;
-    getCart(cart_key: string): Promise<{
+    getCart(): Promise<{
         total_amount: number;
         total_items: any;
         currency_symbol: any;
@@ -9,7 +9,10 @@ export default function createApiClient(siteURL: string): {
         success: boolean;
         error: any;
     }>;
-    addToCart(cart_key: string | undefined, id: string, quantity?: string): Promise<any>;
-    updateItem(cart_key: string, item_key: string, quantity: string): Promise<any>;
-    removeItem(cart_key: string, item_key: string): Promise<any>;
+    addToCart(id: string, quantity?: string): Promise<{
+        success: boolean;
+        error: any;
+    } | undefined>;
+    updateItem(item_key: string, quantity: string): Promise<any>;
+    removeItem(item_key: string): Promise<any>;
 };

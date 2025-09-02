@@ -13,6 +13,14 @@ function createApiClient(siteURL) {
     });
     // --------------------------------------------------------------------------------//
     // Helper functions
+    // Get cart_key from the local Storage
+    const getCartKey = () => {
+        return localStorage.getItem("cart_key") || "";
+    };
+    // Set cart_key in the local Storage
+    const setCartKey = (cartName, cartValue) => {
+        localStorage.setItem(cartName, cartValue);
+    };
     // Format cart data for ``sidebar``
     const formatCartData = (response) => {
         const minor_unit = response.currency.currency_minor_unit;
@@ -92,13 +100,14 @@ function createApiClient(siteURL) {
             }
         },
         // Get cart
-        async getCart(cart_key) {
+        async getCart() {
             try {
+                const cart_key = getCartKey();
                 // Ensure cart_key is provided as `string` and is not empty
                 if (typeof cart_key !== "string")
                     throw new Error("cart_key is required as `string`.");
                 if (cart_key === "")
-                    throw new Error("cart_key is required, can't be empty.");
+                    throw new Error("No Cart is present.");
                 console.log('Fetching the cart.');
                 const response = await API.get(`/cart`, {
                     params: {
@@ -114,8 +123,9 @@ function createApiClient(siteURL) {
             }
         },
         // Add to cart
-        async addToCart(cart_key = "", id, quantity = "1") {
+        async addToCart(id, quantity = "1") {
             try {
+                const cart_key = getCartKey();
                 // Ensure cart_key is provided as `string`
                 if (typeof cart_key !== "string")
                     throw new Error("cart_key is required as `string`.");
@@ -143,8 +153,12 @@ function createApiClient(siteURL) {
                         cart_key: cart_key
                     },
                 });
+                // res.cookie('cart_key', response.data.cart_key, { httpOnly: true });
                 console.log("Item added");
-                return response.data.cart_key;
+                console.log("Key Stored");
+                // localStorage.setItem(cart_key,response.data.cart_key);
+                setCartKey("cart_key", response.data.cart_key);
+                // return response.data.cart_key;
             }
             catch (error) {
                 const message = error.response?.data?.message || error.message || "Failed to fetch cart.";
@@ -152,13 +166,14 @@ function createApiClient(siteURL) {
             }
         },
         // Update item
-        async updateItem(cart_key, item_key, quantity) {
+        async updateItem(item_key, quantity) {
             try {
+                const cart_key = getCartKey();
                 // Ensure cart_key is provided as `string` and is not empty
                 if (typeof cart_key !== "string")
                     throw new Error("cart_key is required as `string`.");
                 if (cart_key === "")
-                    throw new Error("Cart key is required");
+                    throw new Error("No cart is present.");
                 // Ensure item_key is provided as `string` and is not empty
                 if (typeof item_key !== "string")
                     throw new Error("item_key is required as `string`.");
@@ -185,13 +200,14 @@ function createApiClient(siteURL) {
             }
         },
         // Remove item
-        async removeItem(cart_key, item_key) {
+        async removeItem(item_key) {
             try {
+                const cart_key = getCartKey();
                 // Ensure cart_key is provided as `string` and is not empty
                 if (typeof cart_key !== "string")
                     throw new Error("cart_key is required as `string`.");
                 if (cart_key === "")
-                    throw new Error("Cart key is required");
+                    throw new Error("No cart is present.");
                 // Ensure item_key is provided as `string` and is not empty
                 if (typeof item_key !== "string")
                     throw new Error("item_key is required as `string`.");

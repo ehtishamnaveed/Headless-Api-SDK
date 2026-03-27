@@ -1,96 +1,110 @@
 # Headless Woo API Library for Frontend
-A special front end library for headless woocomerce via the use of ``Cocart API``.
 
-`!! CURRENTLY FOR GUEST CUSTOMER USE ONLY`
+A lightweight JavaScript/TypeScript library for building headless WooCommerce storefronts using the [CoCart API](https://cocartapi.com/).
 
-## How to use it?
-First use this command to install the library
+> **Note:** Currently supports guest customers only.
+
+---
+
+## Installation
+
 ```bash
 npm install git+https://github.com/ehtishamnaveed/Headless-Api-SDK.git
 ```
 
-In your main file add the following import at the top of your main file
-```javascript 
+---
+
+## Setup
+
+Import and initialize the client with your WordPress site URL:
+
+```javascript
 import createApiClient from "@Ehtisham/headless-api-sdk";
+
+const api = createApiClient("https://your-site-url.com");
 ```
 
-Prepare the library to use your wordpress via adding ``https://your-site-URL.com`` inside
-```javascript 
-const api = createApiClient(Your-Site-URL)
-```
+> **Recommended:** Store your URL in a `.env` file instead of hardcoding it.
+>
+> ```env
+> VITE_API_BASE_URL=https://your-site-url.com
+> ```
+>
+> ```javascript
+> const api = createApiClient(import.meta.env.VITE_API_BASE_URL);
+> ```
 
-### NOTE: Keep your website ``URL`` in your ``.env`` file and use its variable.
-like:
-```javascript 
-const api = createApiClient(`${import.meta.env.VITE_API_BASE_URL}`);
-```
+All functions are `async` — always use `await` when calling them.
 
-Now use the functions as you like, but remmber to use ``await`` as they are ``async`` functions.
+> The cart key is managed automatically in `localStorage`. You do not need to pass it to any function.
+
+---
 
 ## Functions
 
 ### `getProducts()`
-Returns the product list in **JSON** format.
 
-**Example:**
+Returns the full list of products.
+
 ```javascript
-const products = await getProducts();
+const products = await api.getProducts();
 console.log(products);
 ```
 
-### `getCart(cart_key)`
- returns the cart detail for a given `cart_key`
- 
- **Parameters:**
-- `cart_key` *(string, required)* — The unique cart identifier.
+---
 
-**Example:**
+### `getCart()`
+
+Returns the current cart contents using the cart key stored in `localStorage`.
+
 ```javascript
-const cart = await getCart("abcd1234");
+const cart = await api.getCart();
 console.log(cart);
 ```
 
+---
 
-### `addToCart(cart_key, id, quantity)`
- Adds an item to the cart.
- 
- **Parameters:**
-- `cart_key (string, optional)` — The existing cart key. If omitted, a new cart will be created and its key returned.
-- `id (string, required)` — The product ID to add.
-- `quantity (string, optional, default: "1")`  — Quantity to add.
+### `addToCart(id, quantity?)`
 
-**Example:**
+Adds a product to the cart. If no cart exists yet, one is created automatically and its key is saved to `localStorage`.
+
+| Parameter  | Type   | Required | Default |
+|------------|--------|----------|---------|
+| `id`       | string | Yes      |         |
+| `quantity` | string | No       | `"1"`   |
+
 ```javascript
-const cart = await addToCart(null, 101, 2); // Creates a new cart and adds item
-const updatedCart = await addToCart("abcd1234", 101, 2); // Adds to existing cart
+await api.addToCart("101");       // adds 1
+await api.addToCart("101", "3"); // adds 3
 ```
 
+---
 
-### `updateItem(cart_key, item_key, quantity)`
- Updates the quantity of a specific cart item.
- 
- **Parameters:**
-- `cart_key (string, required)` — The cart key.
-- `item_key (string, required)` — The cart item key.
-- `quantity (string, required)`  — The new quantity.
+### `updateItem(item_key, quantity)`
 
-**Example:**
+Updates the quantity of an item already in the cart.
+
+| Parameter  | Type   | Required |
+|------------|--------|----------|
+| `item_key` | string | Yes      |
+| `quantity` | string | Yes      |
+
 ```javascript
-const updatedCart = await updateItem("abcd1234", "item5678", 3);
-console.log(updatedCart);
+const cart = await api.updateItem("item5678", "3");
+console.log(cart);
 ```
 
+---
 
-### `removeItem(cart_key, item_key)`
- Removes an item from the cart.
- 
- **Parameters:**
-- `cart_key (string, required)` — The cart key.
-- `item_key (string, required)` — The cart item key.
+### `removeItem(item_key)`
 
-**Example:**
+Removes an item from the cart.
+
+| Parameter  | Type   | Required |
+|------------|--------|----------|
+| `item_key` | string | Yes      |
+
 ```javascript
-const updatedCart = await removeItem("abcd1234", "item5678");
-console.log(updatedCart);
+const cart = await api.removeItem("item5678");
+console.log(cart);
 ```
-
